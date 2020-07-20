@@ -19,6 +19,13 @@ jobs:
         - name: Copy JAR to root folder
           run: cp java_src/bazel-bin/libjava.jar tink-1.4.0.${{ github.run_number }}.jar
 
+        - name: Deploy JAR to GitHub Packages
+          run: |
+            curl \
+              --upload-file tink-1.4.0.${{ github.run_number }}.jar \
+              --header 'Authorization: token ${{ secrets.GITHUB_TOKEN }}' \
+              https://maven.pkg.github.com/swapii/google-tink/com/github/swapii/google-tink/tink/1.4.0.${{ github.run_number }}/
+
     android:
 
       runs-on: ubuntu-latest
@@ -33,3 +40,10 @@ jobs:
 
         - name: Copy JAR to root folder
           run: cp java_src/bazel-bin/libandroid.jar tink-android-1.4.0.${{ github.run_number }}.jar
+
+        - name: Deploy JAR to GitHub Packages
+          run: |
+            curl \
+              --upload-file tink-android-1.4.0.${{ github.run_number }}.jar \
+              --header 'Authorization: token ${{ secrets.GITHUB_TOKEN }}' \
+              https://maven.pkg.github.com/swapii/google-tink/com/github/swapii/google-tink/tink-android/1.4.0.${{ github.run_number }}/
