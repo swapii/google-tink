@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
 
-    build:
+    jvm:
   
       runs-on: ubuntu-latest
   
@@ -13,8 +13,23 @@ jobs:
         - name: Checkout sources
           uses: actions/checkout@v2
 
-        - name: Build JAR for JVM
+        - name: Build JAR
           run: cd java_src && bazelisk build java
 
-        - name: Build JAR for Android
+        - name: Copy JAR to root folder
+          run: cp java_src/bazel-bin/libjava.jar tink-1.4.0.${{ github.run_number }}.jar
+
+    android:
+
+      runs-on: ubuntu-latest
+
+      steps:
+
+        - name: Checkout sources
+          uses: actions/checkout@v2
+
+        - name: Build JAR
           run: cd java_src && bazelisk build android
+
+        - name: Copy JAR to root folder
+          run: cp java_src/bazel-bin/libandroid.jar tink-android-1.4.0.${{ github.run_number }}.jar
