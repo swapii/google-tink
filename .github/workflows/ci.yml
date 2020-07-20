@@ -1,0 +1,17 @@
+name: Continious integration
+
+on: [push]
+
+jobs:
+
+    build:
+  
+      runs-on: ubuntu-latest
+  
+      steps:
+  
+        - name: Checkout sources
+          uses: actions/checkout@v2
+
+        - name: Build JAR
+          run: cd java_src && bazelisk build java
