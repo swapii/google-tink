@@ -13,5 +13,8 @@ jobs:
         - name: Checkout sources
           uses: actions/checkout@v2
 
-        - name: Build JAR
+        - name: Build JAR for JVM
           run: cd java_src && bazelisk build java
+
+        - name: Build JAR for Android
+          run: cd java_src && bazelisk build android
