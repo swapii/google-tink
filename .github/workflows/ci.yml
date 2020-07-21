@@ -1,0 +1,69 @@
+name: Continious integration
+
+on: [push]
+
+jobs:
+
+    jvm:
+  
+      runs-on: ubuntu-latest
+  
+      steps:
+  
+        - name: Checkout sources
+          uses: actions/checkout@v2
+
+        - name: Build JAR
+          run: cd java_src && bazelisk build tink
+
+        - name: Copy JAR to root folder
+          run: cp java_src/bazel-bin/tink.jar tink-1.4.0.${{ github.run_number }}.jar
+
+        - name: Deploy JAR to GitHub Packages
+          run: |
+            curl \
+              --upload-file tink-1.4.0.${{ github.run_number }}.jar \
+              --header 'Authorization: token ${{ secrets.GITHUB_TOKEN }}' \
+              https://maven.pkg.github.com/swapii/google-tink/com/github/swapii/google-tink/tink/1.4.0.${{ github.run_number }}/
+
+        - name: Generate POM
+          run: cat java_src/template.pom | sed -E 's/(<version>)tink(<\/version>)/\11.4.0.${{ github.run_number }}\2/' > tink-1.4.0.${{ github.run_number }}.pom
+    
+        - name: Deploy JAR to GitHub Packages
+          run: |
+            curl \
+              --upload-file tink-1.4.0.${{ github.run_number }}.pom \
+              --header 'Authorization: token ${{ secrets.GITHUB_TOKEN }}' \
+              https://maven.pkg.github.com/swapii/google-tink/com/github/swapii/google-tink/tink/1.4.0.${{ github.run_number }}/
+
+    android:
+
+      runs-on: ubuntu-latest
+
+      steps:
+
+        - name: Checkout sources
+          uses: actions/checkout@v2
+
+        - name: Build JAR
+          run: cd java_src && bazelisk build tink-android
+
+        - name: Copy JAR to root folder
+          run: cp java_src/bazel-bin/tink-android.jar tink-android-1.4.0.${{ github.run_number }}.jar
+
+        - name: Deploy JAR to GitHub Packages
+          run: |
+            curl \
+              --upload-file tink-android-1.4.0.${{ github.run_number }}.jar \
+              --header 'Authorization: token ${{ secrets.GITHUB_TOKEN }}' \
+              https://maven.pkg.github.com/swapii/google-tink/com/github/swapii/google-tink/tink-android/1.4.0.${{ github.run_number }}/
+
+        - name: Generate POM
+          run: cat java_src/template.pom | sed -E 's/(<version>)tink(<\/version>)/\11.4.0.${{ github.run_number }}\2/' | sed -E 's/(<artifactId>tink)(<\/artifactId>)/\1-android\2/' > tink-android-1.4.0.${{ github.run_number }}.pom
+
+        - name: Deploy POM to GitHub Packages
+          run: |
+            curl \
+              --upload-file tink-android-1.4.0.${{ github.run_number }}.pom \
+              --header 'Authorization: token ${{ secrets.GITHUB_TOKEN }}' \
+              https://maven.pkg.github.com/swapii/google-tink/com/github/swapii/google-tink/tink-android/1.4.0.${{ github.run_number }}/
