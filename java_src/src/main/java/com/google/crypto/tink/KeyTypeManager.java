@@ -52,7 +52,7 @@ import java.util.Set;
 @Alpha
 public abstract class KeyTypeManager<KeyProtoT extends MessageLite> {
   /** A PrimitiveFactory knows how to create primitives from a given key. */
-  protected abstract static class PrimitiveFactory<PrimitiveT, KeyT> {
+  public abstract static class PrimitiveFactory<PrimitiveT, KeyT> {
     private final Class<PrimitiveT> clazz;
 
     public PrimitiveFactory(Class<PrimitiveT> clazz) {

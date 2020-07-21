@@ -117,6 +117,11 @@ public final class AesGcmJce implements Aead {
 
   private static AlgorithmParameterSpec getParams(final byte[] buf, int offset, int len)
       throws GeneralSecurityException {
+
+    if (SubtleUtil.getAndroidSdkVersion() <= 19) {
+      return new IvParameterSpec(buf, offset, len);
+    }
+
     try {
       Class.forName("javax.crypto.spec.GCMParameterSpec");
       return new GCMParameterSpec(8 * TAG_SIZE_IN_BYTES, buf, offset, len);
@@ -129,7 +134,10 @@ public final class AesGcmJce implements Aead {
         return new IvParameterSpec(buf, offset, len);
       }
     }
+
     throw new GeneralSecurityException(
         "cannot use AES-GCM: javax.crypto.spec.GCMParameterSpec not found");
+
   }
+
 };
