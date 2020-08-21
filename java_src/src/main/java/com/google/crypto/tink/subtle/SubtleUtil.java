@@ -17,6 +17,8 @@
 package com.google.crypto.tink.subtle;
 
 import com.google.crypto.tink.subtle.Enums.HashType;
+
+import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.security.GeneralSecurityException;
@@ -87,6 +89,33 @@ public class SubtleUtil {
       // If Application isn't loaded, it might as well not be Android.
       return false;
     }
+  }
+
+  public static int getAndroidSdkVersion() {
+
+    Class versionClass;
+
+    try {
+        versionClass = Class.forName("android.os.Build$VERSION", /*initialize=*/ false, null);
+    } catch (Exception e) {
+        // If Build class isn't loaded, it might as well not be Android.
+        return -1;
+    }
+
+    Field sdkIntField;
+
+    try {
+        sdkIntField = versionClass.getField("SDK_INT");
+    } catch (NoSuchFieldException e) {
+        throw new RuntimeException("Can't get field SDK_INT from VERSION", e);
+    }
+
+    try {
+        return sdkIntField.getInt(null);
+    } catch (IllegalAccessException e) {
+        throw new RuntimeException("Can't get instance from field SDK_INT", e);
+    }
+    
   }
 
   /**
